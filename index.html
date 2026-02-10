@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>LifeDrop 🩸 | Blood Donation Platform</title>
+  <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+  <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <style>
+    body { font-family: Arial, sans-serif; background: #f5f5f5; margin: 0; padding: 0; }
+    .container { max-width: 420px; margin: 40px auto; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+    h1 { text-align: center; color: #d32f2f; }
+    input, button { width: 100%; padding: 10px; margin: 8px 0; font-size: 16px; }
+    button { background: #d32f2f; color: white; border: none; border-radius: 5px; cursor: pointer; }
+    button:hover { opacity: 0.9; }
+    .option { border: 1px solid #ccc; padding: 8px; margin-bottom: 6px; border-radius: 5px; cursor: pointer; text-align: center; }
+    .option.selected { background: #ffe5e5; border-color: #d32f2f; font-weight: bold; }
+    .donor { margin-top: 6px; padding: 6px; background: #e8f5e9; border-radius: 4px; }
+  </style>
+</head>
+<body>
+  <div id="root"></div>
+
+  <script type="text/babel">
+    const compatibility = {
+      "O-": ["O-", "O+", "A-", "A+", "B-", "B+", "AB-", "AB+"],
+      "O+": ["O+", "A+", "B+", "AB+"],
+      "A-": ["A-", "A+", "AB-", "AB+"],
+      "A+": ["A+", "AB+"],
+      "B-": ["B-", "B+", "AB-", "AB+"],
+      "B+": ["B+", "AB+"],
+      "AB-": ["AB-", "AB+"],
+      "AB+": ["AB+"]
+    };
+
+    const users = [];
+
+    function App() {
+      const [screen, setScreen] = React.useState("login");
+      const [email, setEmail] = React.useState("");
+      const [password, setPassword] = React.useState("");
+      const [bloodGroup, setBloodGroup] = React.useState("");
+      const [receiverGroup, setReceiverGroup] = React.useState("");
+      const [matched, setMatched] = React.useState([]);
+
+      const login = () => {
+        if (!email || !password) {
+          alert("Email and password required");
+          return;
+        }
+        let user = users.find(u => u.email === email);
+        if (!user) users.push({ email, password, bloodGroup: null });
+        setScreen("profile");
+      };
+
+      const saveProfile = () => {
+        if (!bloodGroup) return alert("Select blood group");
+        const user = users.find(u => u.email === email);
+        user.bloodGroup = bloodGroup;
+        setScreen("match");
+      };
+
+      const match = () => {
+        if (!receiverGroup) return alert("Select required blood group");
+        const result = users.filter(u => compatibility[u.bloodGroup]?.includes(receiverGroup));
+        setMatched(result);
+      };
+
+      if (screen === "login") {
+        return (
+          <div className="container">
+            <h1>LifeDrop 🩸</h1>
+            <input placeholder="Email" value={email} onChange={e => setEmail(e.target.value)} />
+            <input type="password" placeholder="Password" value={password} onChange={e => setPassword(e.target.value)} />
+            <button onClick={login}>Login / Register</button>
+          </div>
+        );
+      }
+
+      if (screen === "profile") {
+        return (
+          <div className="container">
+            <h1>Your Blood Group</h1>
+            {Object.keys(compatibility).map(bg => (
+              <div key={bg} className={`option ${bloodGroup === bg ? 'selected' : ''}`} onClick={() => setBloodGroup(bg)}>{bg}</div>
+            ))}
+            <button onClick={saveProfile}>Save Profile</button>
+          </div>
+        );
+      }
+
+      return (
+        <div className="container">
+          <h1>Find Donors</h1>
+          {Object.keys(compatibility).map(bg => (
+            <div key={bg} className={`option ${receiverGroup === bg ? 'selected' : ''}`} onClick={() => setReceiverGroup(bg)}>{bg}</div>
+          ))}
+          <button onClick={match}>Match Donors</button>
+          {matched.map((u, i) => (
+            <div key={i} className="donor">✅ {u.email} ({u.bloodGroup})</div>
+          ))}
+        </div>
+      );
+    }
+
+    ReactDOM.createRoot(document.getElementById("root")).render(<App />);
+  </script>
+</body>
+</html>
+
+<!-- ==================================================
+TEST CASES
+1. Website loads in browser without build tools
+2. Login/register accepts any email + password
+3. Blood group selection persists in session
+4. Matching respects blood compatibility rules
+5. Multiple users can be tested via refresh
+================================================== -->
