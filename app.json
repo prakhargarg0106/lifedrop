@@ -3,9 +3,13 @@
     "name": "LifeDrop",
     "slug": "lifedrop",
     "version": "1.0.0",
-    "platforms": ["android"],
     "android": {
-      "package": "com.lifedrop.app"
+      "package": "com.prakhar.lifedrop"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "3223c5e3-d02c-4d23-beb7-7aadea334e78"
+      }
     }
   }
 }
