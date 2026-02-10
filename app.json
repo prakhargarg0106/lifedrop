@@ -1,0 +1,11 @@
+{
+  "expo": {
+    "name": "LifeDrop",
+    "slug": "lifedrop",
+    "version": "1.0.0",
+    "platforms": ["android"],
+    "android": {
+      "package": "com.lifedrop.app"
+    }
+  }
+}
